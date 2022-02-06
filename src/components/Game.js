@@ -22,21 +22,26 @@ function calculateWinner(squares) {
 }
 
 const Game = () => {
-  const [board, setBoard] = useState(Array(9).fill(""));
-  const [xIsNext, setXisNext] = useState(true);
+  const [board, setBoard] = useState(JSON.parse(localStorage.getItem("board")) || Array(9).fill(""));
+  const [xIsNext, setXIsNext] = useState(localStorage.getItem("xIsNext") ? JSON.parse(localStorage.getItem("xIsNext")) : true);
   const winner = calculateWinner(board);
+
+  useEffect(() => {
+    localStorage.setItem("board", JSON.stringify(board));
+    localStorage.setItem("xIsNext", JSON.stringify(xIsNext));
+  }, [board,xIsNext]);
 
   const handleClick = (i) => {
     const boardCopy = [...board];
     if (winner || boardCopy[i]) return;
     boardCopy[i] = xIsNext ? "X" : "O";
     setBoard(boardCopy);
-    setXisNext(!xIsNext);
+    setXIsNext(!xIsNext);
   };
 
   const restart = () => {
     setBoard(Array(9).fill(""));
-    setXisNext(true);
+    setXIsNext(true);
   };
 
   return (
@@ -49,8 +54,8 @@ const Game = () => {
         {winner
           ? "Winner : " + winner
           : board.every(Boolean)
-          ? "Draw"
-          : "Next Player : " + (xIsNext ? "X" : "O")
+            ? "Draw"
+            : "Next Player : " + (xIsNext ? "X" : "O")
         }
       </div>
     </div>

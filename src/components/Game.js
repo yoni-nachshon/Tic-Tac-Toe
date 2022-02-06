@@ -1,7 +1,7 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Board from "./Board";
 
-export function calculateWinner(squares) {
+function calculateWinner(squares) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -19,11 +19,10 @@ export function calculateWinner(squares) {
     }
   }
   return null;
-};
+}
 
 const Game = () => {
-
-  const [board, setBoard] = useState(Array(9).fill(null));
+  const [board, setBoard] = useState(Array(9).fill(""));
   const [xIsNext, setXisNext] = useState(true);
   const winner = calculateWinner(board);
 
@@ -36,21 +35,23 @@ const Game = () => {
   };
 
   const restart = () => {
-    setBoard(Array(9).fill(null))
-    setXisNext(true)
-  }
-  
+    setBoard(Array(9).fill(""));
+    setXisNext(true);
+  };
+
   return (
-    <div style={{marginTop: "5rem", textAlign: "center"}}>
-      <button
-        style={{ marginBottom: "1rem" }}
-        onClick={restart}
-      >
+    <div style={{ marginTop: "5rem", textAlign: "center" }}>
+      <button style={{ marginBottom: "1rem" }} onClick={restart}>
         New Game
       </button>
       <Board squares={board} onClick={handleClick} />
       <div style={{ marginTop: "1rem" }}>
-        {winner ? "Winner: " + winner : "Next Player : " + (xIsNext ? "X" : "O")}
+        {winner
+          ? "Winner : " + winner
+          : board.every(Boolean)
+          ? "Draw"
+          : "Next Player : " + (xIsNext ? "X" : "O")
+        }
       </div>
     </div>
   );

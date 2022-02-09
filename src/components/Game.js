@@ -21,15 +21,34 @@ function calculateWinner(squares) {
   return null;
 }
 
+const style = {
+  container:{
+    marginTop: "5rem",
+    textAlign: "center",
+  },
+  btn: {
+    marginBottom: "1rem",    
+  },
+  message: {
+    marginTop: "1rem"
+  }
+}
+
 const Game = () => {
-  const [board, setBoard] = useState(JSON.parse(localStorage.getItem("board")) || Array(9).fill(""));
-  const [xIsNext, setXIsNext] = useState(localStorage.getItem("xIsNext") ? JSON.parse(localStorage.getItem("xIsNext")) : true);
+  const [board, setBoard] = useState(
+    JSON.parse(localStorage.getItem("board")) || Array(9).fill("")
+  );
+  const [xIsNext, setXIsNext] = useState(
+    localStorage.getItem("xIsNext")
+      ? JSON.parse(localStorage.getItem("xIsNext"))
+      : true
+  );
   const winner = calculateWinner(board);
 
   useEffect(() => {
     localStorage.setItem("board", JSON.stringify(board));
     localStorage.setItem("xIsNext", JSON.stringify(xIsNext));
-  }, [board,xIsNext]);
+  }, [board, xIsNext]);
 
   const handleClick = (i) => {
     const boardCopy = [...board];
@@ -45,18 +64,17 @@ const Game = () => {
   };
 
   return (
-    <div style={{ marginTop: "5rem", textAlign: "center" }}>
-      <button style={{ marginBottom: "1rem" }} onClick={restart}>
+    <div style={style.container}>
+      <button style={style.btn} onClick={restart}>
         New Game
       </button>
       <Board squares={board} onClick={handleClick} />
-      <div style={{ marginTop: "1rem" }}>
+      <div style={style.message}>
         {winner
           ? "Winner : " + winner
           : board.every(Boolean)
-            ? "Draw"
-            : "Next Player : " + (xIsNext ? "X" : "O")
-        }
+          ? "Draw"
+          : "Next Player : " + (xIsNext ? "X" : "O")}
       </div>
     </div>
   );

@@ -1,7 +1,16 @@
 import React, { useState, useEffect } from "react";
 import Board from "./Board";
 
-function calculateWinner(squares) {
+const Game = () => {
+
+  const [board, setBoard] = useState(
+    JSON.parse(localStorage.getItem("board")) || Array(9).fill("")
+  );
+  const [xIsNext, setXIsNext] = useState(
+    localStorage.getItem("xIsNext") ?
+      JSON.parse(localStorage.getItem("xIsNext")) : true
+  );
+
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -12,37 +21,17 @@ function calculateWinner(squares) {
     [0, 4, 8],
     [2, 4, 6],
   ];
-  for (let i = 0; i < lines.length; i++) {
-    const [a, b, c] = lines[i];
-    if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+
+  const calculateWinner = (squares) => {
+    for (let i of lines) {
+      const [a, b, c] = i;
+      if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
+        return squares[a];
+      }
     }
+    return null;
   }
-  return null;
-}
 
-const style = {
-  container:{
-    marginTop: "5rem",
-    textAlign: "center",
-  },
-  btn: {
-    marginBottom: "1rem",    
-  },
-  message: {
-    marginTop: "1rem"
-  }
-}
-
-const Game = () => {
-  const [board, setBoard] = useState(
-    JSON.parse(localStorage.getItem("board")) || Array(9).fill("")
-  );
-  const [xIsNext, setXIsNext] = useState(
-    localStorage.getItem("xIsNext")
-      ? JSON.parse(localStorage.getItem("xIsNext"))
-      : true
-  );
   const winner = calculateWinner(board);
 
   useEffect(() => {
@@ -64,20 +53,40 @@ const Game = () => {
   };
 
   return (
-    <div style={style.container}>
-      <button style={style.btn} onClick={restart}>
+    <div style={style().container}>
+      <button style={style().btn} onClick={restart}>
         New Game
       </button>
-      <Board squares={board} onClick={handleClick} />
-      <div style={style.message}>
+      <Board squares={board} onClick={handleClick} winner={winner} />
+      <div style={style(winner).message}>
         {winner
           ? "Winner : " + winner
           : board.every(Boolean)
-          ? "Draw"
-          : "Next Player : " + (xIsNext ? "X" : "O")}
+            ? "Draw"
+            : "Next Player : " + (xIsNext ? "X" : "O")}
       </div>
     </div>
   );
 };
+
+const style = (winner) => ({
+  container: {
+    marginTop: "5rem",
+    textAlign: "center",
+  },
+  btn: {
+    marginBottom: "1rem",
+    background: "#03a9f4",
+    color: "#ffffff",
+    border: "4px solid #03a9f4",
+    borderRadius: "2px",
+  },
+  message: {
+    marginTop: "1rem",
+    fontSize: 20,
+    color: winner ? "#03a9f4" : "#808080"
+  },
+
+});
 
 export default Game;

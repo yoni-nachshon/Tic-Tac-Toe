@@ -6,6 +6,7 @@ const Game = () => {
   const [board, setBoard] = useState(
     JSON.parse(localStorage.getItem("board")) || Array(9).fill("")
   );
+
   const [xIsNext, setXIsNext] = useState(
     localStorage.getItem("xIsNext") ?
       JSON.parse(localStorage.getItem("xIsNext")) : true
@@ -26,13 +27,13 @@ const Game = () => {
     for (let i of lines) {
       const [a, b, c] = i;
       if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-        return squares[a];
+        return { winner: squares[a], winingLine: i };
       }
     }
-    return null;
+    return { winner: null, winingLine: null };
   }
 
-  const winner = calculateWinner(board);
+  const { winner, winingLine } = calculateWinner(board);
 
   useEffect(() => {
     localStorage.setItem("board", JSON.stringify(board));
@@ -53,12 +54,16 @@ const Game = () => {
   };
 
   return (
-    <div style={style().container}>
-      <button style={style().btn} onClick={restart}>
+    <div style={style.container}>
+      <button style={style.btn} onClick={restart}>
         New Game
       </button>
-      <Board squares={board} onClick={handleClick} winner={winner} />
-      <div style={style(winner).message}>
+      <Board
+        squares={board}
+        onClick={handleClick}
+        winingLine={winingLine}
+      />
+      <div style={style.message}>
         {winner
           ? "Winner : " + winner
           : board.every(Boolean)
@@ -69,7 +74,7 @@ const Game = () => {
   );
 };
 
-const style = (winner) => ({
+const style = {
   container: {
     marginTop: "5rem",
     textAlign: "center",
@@ -84,9 +89,9 @@ const style = (winner) => ({
   message: {
     marginTop: "1rem",
     fontSize: 20,
-    color: winner ? "#03a9f4" : "#808080"
+    color: "#808080"
   },
 
-});
+};
 
 export default Game;

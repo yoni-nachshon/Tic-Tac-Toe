@@ -3,14 +3,21 @@ import Board from "./Board";
 
 const Game = () => {
 
-  const [board, setBoard] = useState(
-    JSON.parse(localStorage.getItem("board")) || Array(9).fill("")
-  );
+  const [board, setBoard] = useState(Array(9).fill(""));
+  const [xIsNext, setXIsNext] = useState(true);
 
-  const [xIsNext, setXIsNext] = useState(
-    localStorage.getItem("xIsNext") ?
-      JSON.parse(localStorage.getItem("xIsNext")) : true
-  );
+  useEffect(() => {
+    const arr = localStorage.getItem("board")
+    setBoard(arr ? JSON.parse(arr) : Array(9).fill(""))
+    const bool = localStorage.getItem("xIsNext")
+    setXIsNext(bool ? JSON.parse(bool) : true)
+    console.log("mount");
+  }, [])
+
+  useEffect(() => {
+    localStorage.setItem("board", JSON.stringify(board));
+    localStorage.setItem("xIsNext", JSON.stringify(xIsNext));
+  }, [board, xIsNext]);
 
   const lines = [
     [0, 1, 2],
@@ -31,14 +38,9 @@ const Game = () => {
       }
     }
     return { winner: null, winingLine: null };
-  }
+  };
 
   const { winner, winingLine } = calculateWinner(board);
-
-  useEffect(() => {
-    localStorage.setItem("board", JSON.stringify(board));
-    localStorage.setItem("xIsNext", JSON.stringify(xIsNext));
-  }, [board, xIsNext]);
 
   const handleClick = (i) => {
     const boardCopy = [...board];
@@ -54,8 +56,8 @@ const Game = () => {
   };
 
   return (
-    <div style={style.container}>
-      <button style={style.btn} onClick={restart}>
+    <div style={style().container}>
+      <button style={style().btn} onClick={restart}>
         New Game
       </button>
       <Board
@@ -63,7 +65,7 @@ const Game = () => {
         onClick={handleClick}
         winingLine={winingLine}
       />
-      <div style={style.message}>
+      <div style={style(winner).message}>
         {winner
           ? "Winner : " + winner
           : board.every(Boolean)
@@ -74,7 +76,7 @@ const Game = () => {
   );
 };
 
-const style = {
+const style = (winner) => ({
   container: {
     marginTop: "5rem",
     textAlign: "center",
@@ -89,9 +91,9 @@ const style = {
   message: {
     marginTop: "1rem",
     fontSize: 20,
-    color: "#808080"
+    color: winner ? "#03a9f4" : "#808080"
   },
 
-};
+});
 
 export default Game;

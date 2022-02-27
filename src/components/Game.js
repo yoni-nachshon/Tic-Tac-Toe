@@ -6,6 +6,7 @@ const Game = () => {
   const [board, setBoard] = useState(Array(9).fill(""));
   const [xIsNext, setXIsNext] = useState(true);
 
+  
   useEffect(() => {
     const arr = localStorage.getItem("board")
     setBoard(arr ? JSON.parse(arr) : Array(9).fill(""))
@@ -13,11 +14,15 @@ const Game = () => {
     setXIsNext(bool ? JSON.parse(bool) : true)
     console.log("mount");
   }, [])
-
+  
   useEffect(() => {
-    localStorage.setItem("board", JSON.stringify(board));
-    localStorage.setItem("xIsNext", JSON.stringify(xIsNext));
-  }, [board, xIsNext]);
+    const storage = () => {
+      localStorage.setItem("board", JSON.stringify(board));
+      localStorage.setItem("xIsNext", JSON.stringify(xIsNext));
+    }
+    window.addEventListener('beforeunload', storage);
+    return () => window.removeEventListener('beforeunload', storage)
+  }, [board,xIsNext]);
 
   const lines = [
     [0, 1, 2],
@@ -51,6 +56,8 @@ const Game = () => {
   };
 
   const restart = () => {
+    localStorage.removeItem("board")
+    localStorage.removeItem("xIsNext")
     setBoard(Array(9).fill(""));
     setXIsNext(true);
   };
